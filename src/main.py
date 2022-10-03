@@ -6,13 +6,27 @@
 
 import classes
 import io, log
+import os
 import support
 import router
+import engineering.eng_tools as engt
+import sys
 
 def main():
 
+    sys.path.append('geoprocessing')
+    sys.path.append('engineering')
+    sys.path.append('algorithms')
+
+
+    case_path = r'D:\PowerLineRouter\test\data\example_01'
+
     # --- reading execution parameters
     log.console_print("reading execution parameters")
+    substations = engt.readSubstations(case_path)
+    
+    transmission_lines = engt.readTransmissionLines(case_path, substations)
+
     # console_print("reading execution parameters")
     # classes.py
     # exc = read_execution(pathcase)
@@ -53,4 +67,7 @@ def main():
     # export_optimal_routes(pathcase, 
     #                     list(SpatialLinesDataFrame(sl = rte, data = data.frame(line_id=1))),
     #                     as.geojson=F, ref_proj=projections_list$WGS84)
+
+if __name__ == '__main__':
+    main()
 

@@ -17,24 +17,22 @@ class Substation:
         self.id          = id
         self.name        = name
         self.voltage     = voltage
-        self.coordindate = coordinate    
+        self.coordinate = coordinate    
 
 
 class TransmissionLine:
     def __init__(self):
         self.id          = 0
         self.name        = ""
-        self.voltage     = 0
         self.sub_from    = Substation()
         self.sub_to      = Substation()
         self.coordinates = []
         self.run_router  = False
 
 
-    def add(self, id, name, voltage, sub_from, sub_to, coordinates, run_router):
+    def add(self, id, name, sub_from, sub_to, coordinates, run_router):
         self.id          = id
         self.name        = name
-        self.voltage     = voltage
         self.sub_from    = sub_from
         self.sub_to      = sub_to
         self.coordinates = coordinates
