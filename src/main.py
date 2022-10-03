@@ -26,6 +26,7 @@ def main():
     substations = engt.readSubstations(case_path)
     
     transmission_lines = engt.readTransmissionLines(case_path, substations)
+    t1 = transmission_lines[0]
 
     # console_print("reading execution parameters")
     # classes.py

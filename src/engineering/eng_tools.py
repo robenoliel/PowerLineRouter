@@ -20,8 +20,6 @@ def metadataTransmissionLine():
         'sub_id_from':np.int64,
         'sub_id_to':np.int64,
         'run':np.int64,
-        'lat':str,
-        'lon':str
     }
 
 
@@ -33,7 +31,6 @@ def readTransmissionLines(case_path, substations):
     file_path = os.path.join(case_path, 'transmission_line.csv')
     md = metadataTransmissionLine()
     df = pd.read_csv(file_path, dtype = md)
-    print(df)
 
     transmissionLines = []
     for _, row in df.iterrows():
@@ -47,23 +44,12 @@ def readTransmissionLines(case_path, substations):
             raise Exception('`run` parameter must be either 1 or 0')
         run_router = True if row['run'] == 1 else False
 
-        coordinates = []
-        lat = [np.float64(val) for val in row['lat'].split(' ')]
-        lon = [np.float64(val) for val in row['lon'].split(' ')]
-        if len(lat) != len(lon):
-            raise Exception('`lat` and `lon` must have the same length')
-        for i in range(len(lat)):
-            coord = Coordinate()
-            coord.add(lat[i], lon[i])
-            coordinates.append(coord)
-
         tl = TransmissionLine()
         tl.add(
             id,
             name,
             sub_from,
             sub_to,
-            coordinates,
             run_router
         )
         transmissionLines.append(tl)

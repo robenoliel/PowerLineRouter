@@ -30,7 +30,7 @@ class TransmissionLine:
         self.run_router  = False
 
 
-    def add(self, id, name, sub_from, sub_to, coordinates, run_router):
+    def add(self, id, name, sub_from, sub_to, run_router, coordinates = []):
         self.id          = id
         self.name        = name
         self.sub_from    = sub_from
