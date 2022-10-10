@@ -11,6 +11,8 @@ import support
 import router
 import engineering.eng_tools as engt
 import sys
+from costmap import costmap
+import rasterio as rio
 
 def main():
 
@@ -18,15 +20,22 @@ def main():
     sys.path.append('engineering')
     sys.path.append('algorithms')
 
+    case_path = r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
 
-    case_path = r'D:\PowerLineRouter\test\data\example_01'
+    path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
+    path_to_shape = os.path.join(case_path, 'environmental', 'unidades_de_conservacao_incra.shp')
+    cost = 100
+
+    cost = costmap(path_to_raster, path_to_shape, cost)
+
+    
 
     # --- reading execution parameters
-    log.console_print("reading execution parameters")
-    substations = engt.readSubstations(case_path)
+    #log.console_print("reading execution parameters")
+    #substations = engt.readSubstations(case_path)
     
-    transmission_lines = engt.readTransmissionLines(case_path, substations)
-    t1 = transmission_lines[0]
+    #transmission_lines = engt.readTransmissionLines(case_path, substations)
+    #t1 = transmission_lines[0]
 
     # console_print("reading execution parameters")
     # classes.py
