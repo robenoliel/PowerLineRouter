@@ -23,10 +23,10 @@ def main():
     case_path = r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
 
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
-    path_to_shape = os.path.join(case_path, 'environmental', 'unidades_de_conservacao_incra.shp')
+    path_to_constraints = os.path.join(case_path, 'constraints.csv')
     cost = 100
 
-    cost = costmap(path_to_raster, path_to_shape, cost)
+    cost = costmap(path_to_raster, path_to_constraints)
 
     
 

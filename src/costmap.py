@@ -8,31 +8,66 @@ import rasterio as rio
 from rasterio import features, merge
 import fiona
 import geopandas as gpd
+import pandas as pd
+import os
 
-def costmap(path_to_raster, path_to_shape, cost):
-    
-    # open raster file
-    raster = rio.open(path_to_raster)
-
+def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
     # open shapefile
-    shape = gpd.read_file(path_to_shape)
-    geom = [shapes for shapes in shape.geometry]
+    file_name = os.path.basename(filepath)
+
+    if not os.path.exists(filepath):
+        print('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
+        return cost_map
+
+    shape = gpd.read_file(filepath)
+
+    if shape.crs == None:
+        print('WARNING: {} file is not georeferenced and will be disconsidered.'.format(file_name))
+        return cost_map
+
+    geom = [shapes.buffer(buffer) for shapes in shape.geometry]
+
+    fill = 0
+    if inside == 0:
+        fill = cost
+        cost = 0
 
     # add cost to raster according to the shapefile region
-
-    #TODO: Check if basemap has proj. If not: raise error.
-    #TODO: Check if shapes have proj. If not: disconsider it and raise warning.
-    #TODO: Verify if shapes are in same proj as basemap. If not: reproj shapes.
     rasterized = features.rasterize(geom,
-                                out_shape = raster.shape,
-                                fill = 0,
+                                out_shape = cost_map.shape,
+                                fill = fill,
                                 out = None,
-                                transform = raster.transform,
+                                transform = base_trans,
                                 all_touched = False,
                                 default_value = cost,
                                 dtype = None)
 
-    cost_map = raster.read(1) + rasterized
+    return cost_map + rasterized
+
+
+def costmap(path_to_raster, path_to_constraints):
+    
+    # open raster file
+    raster = rio.open(path_to_raster)
+    cost_map = raster.read(1)
+    base_proj = raster.crs
+    base_trans = raster.transform
+    
+    if base_proj == None:
+        raise Exception('Base map must be georeferenced')
+
+    df_cons = pd.read_csv(path_to_constraints)
+
+    for _, row in df_cons.iterrows():
+        if row['consider']:
+            cost_map = addCost(
+                cost_map,
+                os.path.join(os.path.dirname(path_to_constraints), row['filepath']),
+                row['cost'],
+                row['buffer'],
+                row['inside'],
+                base_trans
+            )
 
     with rio.open(r'D:\PowerLineRouter\test\data\temp\costmap.tiff', 'w', **raster.profile) as ff:
         ff.write(cost_map,1)
