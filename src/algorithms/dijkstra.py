@@ -21,11 +21,9 @@ def dijkstra(G, s, t):
     visited[s]    = True
     pathcounts[s] = 1
     H.put((s, 0.0))
-    H.get()
 
     # runs while queue has elements
     while not H.empty():
-        print("1. passou")
 
         # remove "cheapest" element
         next_item = H.get()
@@ -65,3 +63,17 @@ def dijkstra(G, s, t):
     # preds.remove(s)
 
     return dists, parents
+
+# G = nx.Graph()
+# G.add_weighted_edges_from([
+#     # no, nd, we
+#     (0, 1, 1.0),
+#     (1, 2, 1.0),
+#     (0, 2, 1.5),
+#     (2, 3, 2.0)
+# ])
+
+# s=0
+# t=3
+
+# dijkstra(G, s, t)

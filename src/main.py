@@ -28,6 +28,11 @@ def main():
 
     cost = costmap(path_to_raster, path_to_constraints)
 
+    # conversao do costmap para matriz
+    
+
+    # solução do dijkstra
+
     
 
     # --- reading execution parameters

@@ -15,6 +15,7 @@ def matrix_to_weighted_graph(W, K=1):
     M = len(W[1])
 
     # graph initialization
+    # should we define a DiGraph?
     G = nx.Graph()
 
     # getting weighted edges from matrix neighborhood 
