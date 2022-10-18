@@ -13,6 +13,7 @@ import engineering.eng_tools as engt
 import sys
 from costmap import costmap
 import rasterio as rio
+import argparse
 
 def main():
 
@@ -20,7 +21,11 @@ def main():
     sys.path.append('engineering')
     sys.path.append('algorithms')
 
-    case_path = r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path', type=str, required=True)
+
+    #r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
+    case_path = parser.parse_args().path
 
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
