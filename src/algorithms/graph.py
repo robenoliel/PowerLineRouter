@@ -6,7 +6,7 @@ def get_element(matrix, pos):
         matrix: Matrix (numpy array)
         pos: Matrix position (int)
     """
-    print(matrix.flatten(order='C'))
+    # print(matrix.flatten(order='C'))
     return matrix.flatten(order='C')[pos]
 
 def get_pos_from_coords(coords, size):
@@ -23,7 +23,7 @@ def get_coords_from_pos(pos, size):
         pos: Matrix position (int)
         size: Matrix order (m,n) (int)
     """
-    return (pos // size[1] + 1, pos % size[1])
+    return (pos // size[1], pos % size[1])
 
 def surroundings(W,i,j,N,M,k):
     w = []
