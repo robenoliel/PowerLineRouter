@@ -1,5 +1,30 @@
 import networkx as nx
 
+def get_element(matrix, pos):
+    """
+    Returns element in `pos` position from numpy array. Parameters:
+        matrix: Matrix (numpy array)
+        pos: Matrix position (int)
+    """
+    print(matrix.flatten(order='C'))
+    return matrix.flatten(order='C')[pos]
+
+def get_pos_from_coords(coords, size):
+    """
+    Returns element number position according to (x,y) tuple. Parameters:
+        coords: Matrix coordinates (x,y) (int)
+        size: Matrix order (m,n) (int)
+    """
+    return (coords[0] - 1)*size[1] + coords[1]
+
+def get_coords_from_pos(pos, size):
+    """
+    Returns element coordinates according to position number. Parameters:
+        pos: Matrix position (int)
+        size: Matrix order (m,n) (int)
+    """
+    return (pos // size[1] + 1, pos % size[1])
+
 def surroundings(W,i,j,N,M,k):
     w = []
     for u in range(i,max(i+k,N)):

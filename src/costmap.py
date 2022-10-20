@@ -6,7 +6,6 @@
 
 import rasterio as rio
 from rasterio import features, merge
-import fiona
 import geopandas as gpd
 import pandas as pd
 import os

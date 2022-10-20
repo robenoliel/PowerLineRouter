@@ -14,6 +14,8 @@ import sys
 from costmap import costmap
 import rasterio as rio
 import argparse
+import algorithms.graph as grp
+import numpy as np
 
 def main():
 
@@ -31,7 +33,12 @@ def main():
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
     cost = 100
 
-    cost = costmap(path_to_raster, path_to_constraints)
+    #cost = costmap(path_to_raster, path_to_constraints)
+
+    m = np.array([[1,2],[3,4]])
+    print(grp.get_element(m, 3))
+    print(grp.get_coords_from_pos(5, (3,3)))
+    print(grp.get_pos_from_coords((2,2), (3,3)))
 
     # conversao do costmap para matriz
     
