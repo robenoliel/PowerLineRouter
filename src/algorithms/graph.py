@@ -6,8 +6,8 @@ def get_element(matrix, pos):
         matrix: Matrix (numpy array)
         pos: Matrix position (int)
     """
-    # print(matrix.flatten(order='C'))
-    return matrix.flatten(order='C')[pos]
+    coords = get_coords_from_pos(pos, matrix.shape)
+    return matrix[coords[0], coords[1]]
 
 def get_pos_from_coords(coords, size):
     """
@@ -15,6 +15,8 @@ def get_pos_from_coords(coords, size):
         coords: Matrix coordinates (x,y) (int)
         size: Matrix order (m,n) (int)
     """
+    if coords[0] > size[0] or coords[1] > size[1]:
+        raise Exception('Index out of range')
     return (coords[0] - 1)*size[1] + coords[1]
 
 def get_coords_from_pos(pos, size):
@@ -23,7 +25,9 @@ def get_coords_from_pos(pos, size):
         pos: Matrix position (int)
         size: Matrix order (m,n) (int)
     """
-    return (pos // size[1], pos % size[1])
+    if pos > size[0]*size[1]:
+        raise Exception('Index out of range')
+    return (pos // size[1] + 1, pos % size[1])
 
 def surroundings(W,i,j,N,M,k):
     w = []
