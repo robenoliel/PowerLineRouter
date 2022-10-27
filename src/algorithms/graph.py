@@ -28,7 +28,7 @@ def get_coords_from_pos(pos, size):
     """
     if pos > size[0]*size[1]:
         raise Exception('Index out of range')
-    return (pos // size[1] + 1, pos % size[1])
+    return (pos // size[1], pos % size[1] - 1)
 
 def mean(x):
     return sum(x)/len(x)

@@ -16,6 +16,7 @@ from costmap import costmap
 import rasterio as rio
 import argparse
 import algorithms.graph as grp
+import geoprocessing.shapefile as sf
 import numpy as np
 
 def main():
@@ -34,7 +35,6 @@ def main():
     # --- build cost map
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
-    cost = 100
 
     cost = costmap(path_to_raster, path_to_constraints)
 
@@ -45,7 +45,8 @@ def main():
     route = dijkstra(G, 1, 5)
 
     # --- convert to spatial coordinates
-    spline = []
+    spline = sf.path_coords_to_polyline(shortest_path, cost.transform)
+    print(spline)
     
     # --- export to shapefile
     # export shapefile here
