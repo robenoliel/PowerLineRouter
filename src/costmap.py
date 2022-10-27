@@ -78,7 +78,7 @@ def costmap(path_to_raster, path_to_constraints):
     with rio.open(r'D:\PowerLineRouter\test\data\temp\costmap.tiff', 'w', **raster.profile) as ff:
         ff.write(cost_map,1)
 
-    return cost_map
+    return rio.open(r'D:\PowerLineRouter\test\data\temp\costmap.tiff')
 
 # associação dos pontos com as céluluas do raster (matriz)
 def get_raster_cell(raster, point):
