@@ -26,26 +26,41 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, required=True)
 
+    # --- define path to case
     #r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
     case_path = parser.parse_args().path
 
+    # --- build cost map
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
     cost = 100
 
-    #cost = costmap(path_to_raster, path_to_constraints)
+    cost = costmap(path_to_raster, path_to_constraints)
 
+    # --- find shortest path
+    shortest_path = [(1,1), (2,2), (3,3)]
+
+    # --- convert to spatial coordinates
+    spline = []
+    
+    # --- export to shapefile
+    # export shapefile here
+
+    
+
+
+
+
+
+
+
+
+    # ---------------------------
     m = np.array([[1,2],[3,4]])
     print(grp.get_element(m, 3))
     print(grp.get_coords_from_pos(5, (3,3)))
     print(grp.get_pos_from_coords((2,2), (3,3)))
-
-    # conversao do costmap para matriz
-    
-
-    # solução do dijkstra
-
-    
+    # ---------------------------
 
     # --- reading execution parameters
     #log.console_print("reading execution parameters")
