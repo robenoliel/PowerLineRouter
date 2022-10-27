@@ -39,10 +39,15 @@ def main():
     cost = costmap(path_to_raster, path_to_constraints)
 
     # --- convert to graph
-    G = grp.matrix_to_weighted_graph(cost)
+    G, O = grp.matrix_to_weighted_graph(cost)
 
     # --- find shortest path
-    route = dijkstra(G, 1, 5)
+    s, t = 1, 2
+    parents = dijkstra(G, s, t)
+    route_n = get_dijkstra_path(parents, t)
+
+    # --- convert nodes to matrix coordindates
+    route_xy = [grp.get_coords_from_pos(node, (cost.width, cost.height) ) for node in route_n]
 
     # --- convert to spatial coordinates
     spline = []

@@ -52,18 +52,33 @@ def matrix_to_weighted_graph(W, K=1):
     # should we define a DiGraph?
     G = nx.Graph()
 
+    # node map
+    O = make_node_map(N, M)
+
     # getting weighted edges from matrix neighborhood 
     e = []
     for i in range(N):
         for j in range(M):            
             for k in range(K,K+1):
-                for v in surroundings(W,i,j,N,M,k):
-                    e.append(v)
+                for (u,v,w) in surroundings(W,i,j,N,M,k):
+                    e.append( (O[i][j], O[u][v], w) )
 
     # setting edges (should be more efficient like this)
     G.add_weighted_edges_from(e)
    
-    return G
+    return G, O
+
+def make_node_map(N, M):
+    node_map = np.zeros((N, M), dtype=int)
+    
+    k = 0
+    for i in range(N):
+        for j in range(M):
+            k += 1
+            node_map[i][j]  = k
+
+    return node_map
+
 
 def path_to_shape(path):
     shape = 0 # shapefile

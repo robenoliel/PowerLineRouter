@@ -64,6 +64,14 @@ def dijkstra(G, s, t):
 
     return dists, parents
 
+def get_dijkstra_path(parents, t):
+    path = [t]
+    while t != 0:
+        t = parents[t]
+        if t != 0:
+            path.append(t)
+    return path
+
 # G = nx.Graph()
 # G.add_weighted_edges_from([
 #     # no, nd, we
