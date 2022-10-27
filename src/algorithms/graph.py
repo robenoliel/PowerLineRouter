@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 
 def get_element(matrix, pos):
     """
@@ -29,11 +30,15 @@ def get_coords_from_pos(pos, size):
         raise Exception('Index out of range')
     return (pos // size[1] + 1, pos % size[1])
 
+def mean(x):
+    return sum(x)/len(x)
+
+
 def surroundings(W,i,j,N,M,k):
     w = []
-    for u in range(i,max(i+k,N)):
-        for v in range(i,max(j+k,M)):
-            w.append((u,v,W[u][v]))
+    for u in range(i,min(i+k+1,N)):
+        for v in range(i,min(j+k+1,M)):
+            w.append((u, v, mean([W[i][j], W[u][v]]) * k))
     return w
 
 
@@ -49,10 +54,11 @@ def matrix_to_weighted_graph(W, K=1):
 
     # getting weighted edges from matrix neighborhood 
     e = []
-    for i in range(0,N):
-        for j in range(0,M):            
-            for k in range(0,K):
-                e.append(surroundings(W,i,j,N,M,k))
+    for i in range(N):
+        for j in range(M):            
+            for k in range(K,K+1):
+                for v in surroundings(W,i,j,N,M,k):
+                    e.append(v)
 
     # setting edges (should be more efficient like this)
     G.add_weighted_edges_from(e)

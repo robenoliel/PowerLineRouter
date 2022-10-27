@@ -4,6 +4,7 @@
     script responsable for handling the software's workflow
 """
 
+from algorithms.dijkstra import dijkstra
 import classes
 import io, log
 import os
@@ -37,8 +38,11 @@ def main():
 
     cost = costmap(path_to_raster, path_to_constraints)
 
+    # --- convert to graph
+    G = grp.matrix_to_weighted_graph(cost)
+
     # --- find shortest path
-    shortest_path = [(1,1), (2,2), (3,3)]
+    route = dijkstra(G, 1, 5)
 
     # --- convert to spatial coordinates
     spline = []

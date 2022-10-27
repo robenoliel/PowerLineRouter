@@ -1,11 +1,11 @@
-from cmath import inf
 from queue import PriorityQueue
 import networkx as nx
+import numpy as np
 
 def dijkstra(G, s, t):
 
     nvg        = G.number_of_edges()
-    dists      = [inf for i in range(nvg)]
+    dists      = [np.Inf for i in range(nvg)]
     parents    = [0 for i in range(nvg)]
     visited    = [False for i in range(nvg)]
     pathcounts = [0 for i in range(nvg)]
@@ -14,7 +14,7 @@ def dijkstra(G, s, t):
     # priority queue
     H = PriorityQueue()
     for i in range(nvg):
-        H.put((i, inf))
+        H.put((i, np.Inf))
 
     # fill creates only one array.
     dists[s]      = 0.0
@@ -27,7 +27,7 @@ def dijkstra(G, s, t):
 
         # remove "cheapest" element
         next_item = H.get()
-        print(next_item)
+        # print(next_item)
         u = next_item[0]
 
         # stop criterium
