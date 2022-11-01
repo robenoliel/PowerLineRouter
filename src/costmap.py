@@ -49,7 +49,11 @@ def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
     return cost_map + rasterized
 
 
-def costmap(path_to_raster, path_to_constraints):
+def costmap(case_path):
+
+    path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
+    path_to_costmap = os.path.join(case_path, 'costmap', 'costmap.tif')
+    path_to_constraints = os.path.join(case_path, 'constraints.csv')
     
     # open raster file
     raster = rio.open(path_to_raster)
@@ -75,10 +79,10 @@ def costmap(path_to_raster, path_to_constraints):
             )
 
     # write final cost map
-    with rio.open(r'D:\PowerLineRouter\test\data\temp\costmap.tiff', 'w', **raster.profile) as ff:
+    with rio.open(path_to_costmap, 'w', **raster.profile) as ff:
         ff.write(cost_map,1)
 
-    return rio.open(r'D:\PowerLineRouter\test\data\temp\costmap.tiff')
+    return rio.open(path_to_costmap)
 
 # associação dos pontos com as céluluas do raster (matriz)
 def get_raster_cell(raster, point):
