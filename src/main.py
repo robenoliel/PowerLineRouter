@@ -4,7 +4,6 @@
     script responsable for handling the software's workflow
 """
 
-from algorithms.dijkstra import dijkstra
 import classes
 import io, log
 import os
@@ -12,10 +11,11 @@ import support
 import router
 import engineering.eng_tools as engt
 import sys
-from costmap import costmap
+import costmap
 import rasterio as rio
 import argparse
 import algorithms.graph as grp
+import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
 import numpy as np
 
@@ -33,24 +33,25 @@ def main():
     case_path = parser.parse_args().path
 
     # --- build cost map
-    path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
-    path_to_constraints = os.path.join(case_path, 'constraints.csv')
+    
 
-    cost = costmap(path_to_raster, path_to_constraints)
-
+    cost = costmap.costmap(case_path)
+    print('1')
     # --- convert to graph
-    G, O = grp.matrix_to_weighted_graph(cost)
+    G, O = grp.matrix_to_weighted_graph(cost.read(1))
+    print('2')
 
     # --- find shortest path
     s, t = 1, 2
-    parents = dijkstra(G, s, t)
-    route_n = get_dijkstra_path(parents, t)
+    parents = djk.dijkstra(G, s, t)
+    print('3')
+    route_n = djk.get_dijkstra_path(parents, t)
 
     # --- convert nodes to matrix coordindates
     route_xy = [grp.get_coords_from_pos(node, (cost.width, cost.height) ) for node in route_n]
 
     # --- convert to spatial coordinates
-    spline = sf.path_coords_to_polyline(shortest_path, cost.transform)
+    spline = sf.path_coords_to_polyline(route_xy, cost.transform)
     print(spline)
     
     # --- export to shapefile
