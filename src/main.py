@@ -18,6 +18,7 @@ import algorithms.graph as grp
 import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
 import numpy as np
+import support as spp
 
 def main():
 
@@ -31,6 +32,9 @@ def main():
     # --- define path to case
     #r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
     case_path = parser.parse_args().path
+
+    # --- creates dir structure
+    spp.setDirs(case_path)
 
     # --- build cost map
     
