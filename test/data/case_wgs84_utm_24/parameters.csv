@@ -1,2 +1,0 @@
-﻿case,path_case,path_shp,path_rst,use_corridor,projection
-1,D:\Cases\Mestrado\case_wgs84_utm_24,D:\Cases\Mestrado\case,D:\Cases\Mestrado\case,0,"+proj=utm +zone=24 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
