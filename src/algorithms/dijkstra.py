@@ -3,32 +3,45 @@ import networkx as nx
 import numpy as np
 
 def dijkstra(G, s, t):
+    #
+    node_list = list(G.nodes)
 
-    nvg        = G.number_of_edges()
+    # 
+    nvg        = node_list[-1] + 1
     dists      = [np.Inf for i in range(nvg)]
     parents    = [0 for i in range(nvg)]
     visited    = [False for i in range(nvg)]
     pathcounts = [0 for i in range(nvg)]
     preds      = [[] for i in range(nvg)]
     
+    # check if nodes exists
+    if not (s in G):
+        print("target node not found in graph")
+        s = node_list[0]
+    
+    if not (t in G):
+        print("target node not found in graph")
+        t = node_list[-1]
+
     # priority queue
     H = PriorityQueue()
     for i in range(nvg):
-        H.put((i, np.Inf))
+        H.put((np.Inf, str(i)))
 
     # fill creates only one array.
     dists[s]      = 0.0
     visited[s]    = True
     pathcounts[s] = 1
-    H.put((s, 0.0))
+    H.put((0.0, str(s)))
 
     # runs while queue has elements
     while not H.empty():
 
         # remove "cheapest" element
         next_item = H.get()
+        
         # print(next_item)
-        u = next_item[0]
+        u = int(next_item[1])
 
         # stop criterium
         if u == t:
@@ -46,13 +59,13 @@ def dijkstra(G, s, t):
                 dists[v]   = alt
                 parents[v] = u
                 pathcounts[v] += pathcounts[u]
-                H.put((v,alt))
+                H.put((alt, str(v)))
 
             elif alt < dists[v]:
                 dists[v] = alt
                 parents[v] = u
                 pathcounts[v] = pathcounts[u]
-                H.put((v,alt))
+                H.put((alt, str(v)))
 
             elif alt == dists[v]:
                 pathcounts[v] += pathcounts[u]
