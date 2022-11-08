@@ -69,6 +69,9 @@ def costmap(case_path):
     # iterate over list and update cost map accordingly
     for _, row in df_cons.iterrows():
         if row['consider']:
+
+            print("> adding layer: " + row['filepath'])
+
             cost_map = addCost(
                 cost_map,
                 os.path.join(os.path.dirname(path_to_constraints), row['filepath']),
