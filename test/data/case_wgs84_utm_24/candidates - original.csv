@@ -1,2 +1,0 @@
-﻿type,id,x_src,y_src,x_dst,y_dst,base_cost,projection
-candidate_porcoes_3_medeiros_neto_2,1,350762.6,8394826,374450.5,8082851,1.5,"+proj=utm +zone=24 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
