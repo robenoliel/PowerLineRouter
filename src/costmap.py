@@ -4,11 +4,14 @@
     script responsable for building the costmap
 """
 
+from concurrent.futures.process import _chain_from_iterable_of_lists
 import rasterio as rio
 from rasterio import features, merge
 import geopandas as gpd
 import pandas as pd
 import os
+from geoprocessing.raster import *
+
 
 def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
     # open shapefile
@@ -48,16 +51,32 @@ def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
 
     return cost_map + rasterized
 
+def getStartStop(path_to_candidates, base_raster):
+    df_cand = pd.read_csv(path_to_candidates)
+
+    start_lat, start_lon = df_cand['x_src'].values[0], df_cand['y_src'].values[0]
+    stop_lat, stop_lon = df_cand['x_dst'].values[0], df_cand['y_dst'].values[0]
+
+    start_xy = get_xy_from_coordinates(start_lat, start_lon, base_raster)
+    stop_xy = get_xy_from_coordinates(stop_lat, stop_lon, base_raster)
+    
+    return start_xy, stop_xy
+    
 
 def costmap(case_path):
 
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
     path_to_costmap = os.path.join(case_path, 'costmap', 'costmap.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
-    
+    path_to_candidates = os.path.join(case_path, 'candidates.csv')
+
     # open raster file
     raster = rio.open(path_to_raster)
     cost_map = raster.read(1)
+
+    start_xy, stop_xy = getStartStop(path_to_candidates, raster)
+    print(start_xy)
+    print(stop_xy)
     
     # check crs
     if raster.crs == None:
