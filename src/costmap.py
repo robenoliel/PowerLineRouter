@@ -7,10 +7,44 @@
 from concurrent.futures.process import _chain_from_iterable_of_lists
 import rasterio as rio
 from rasterio import features, merge
+from rasterio.windows import Window
 import geopandas as gpd
 import pandas as pd
 import os
 from geoprocessing.raster import *
+
+
+def crop_raster(start_xy, stop_xy, raster):
+
+    gt = raster.transform
+    pixelSizeX = gt[0]
+    pixelSizeY =-gt[4]
+
+    extraSize = 1000 #meters
+    extraPixelsX = int(extraSize/pixelSizeX)
+    extraPixelsY = int(extraSize/pixelSizeY)
+    
+    xoff = start_xy[0] if start_xy[0] < stop_xy[0] else stop_xy[0]
+    yoff = start_xy[1] if start_xy[1] < stop_xy[1] else stop_xy[1]
+
+    xsize = abs(start_xy[0] - stop_xy[0])
+    ysize = abs(start_xy[1] - stop_xy[1])
+
+    xoff_extra = (xoff - extraPixelsX) if (xoff - extraPixelsX) > 0 else 0
+    yoff_extra = (yoff - extraPixelsY) if (yoff - extraPixelsY) > 0 else 0
+
+    xsize_extra = (xsize + extraPixelsX) if (xoff_extra + xsize + extraPixelsX) < raster.read(1).shape[0] else raster.read(1).shape[0] - xoff_extra
+    ysize_extra = (ysize + extraPixelsY) if (yoff_extra + ysize + extraPixelsY) < raster.read(1).shape[1] else raster.read(1).shape[1] - yoff_extra
+    
+    window = Window(xoff_extra, yoff_extra, xsize_extra, ysize_extra)
+    transform = raster.window_transform(window)
+    profile = raster.profile
+    profile.update({
+        'height': xsize_extra,
+        'width': ysize_extra,
+        'transform': transform})
+
+    return window, profile
 
 
 def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
@@ -72,11 +106,20 @@ def costmap(case_path):
 
     # open raster file
     raster = rio.open(path_to_raster)
-    cost_map = raster.read(1)
 
+    #crop raster
     start_xy, stop_xy = getStartStop(path_to_candidates, raster)
     print(start_xy)
     print(stop_xy)
+
+    window, profile = crop_raster(start_xy, stop_xy, raster)
+
+    with rio.open(path_to_costmap, 'w', **profile) as ff:
+        ff.write(raster.read(window = window))
+
+    #load cropped raster
+    raster = rio.open(path_to_costmap)
+    cost_map = raster.read(1)
     
     # check crs
     if raster.crs == None:
