@@ -16,12 +16,10 @@ def dijkstra(G, s, t):
     
     # check if nodes exists
     if not (s in G):
-        print("target node not found in graph")
-        s = node_list[0]
+        raise Exception('source node not found in graph')
     
     if not (t in G):
-        print("target node not found in graph")
-        t = node_list[-1]
+        raise Exception('target node not found in graph')
 
     # priority queue
     H = PriorityQueue()

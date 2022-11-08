@@ -4,9 +4,10 @@
     script responsable for handling the software's workflow
 """
 
+import os
+os.chdir("src")
 import classes
 import io, log
-import os
 import support
 import router
 import engineering.eng_tools as engt
@@ -30,29 +31,32 @@ def main():
     parser.add_argument('--path', type=str, required=True)
 
     # --- define path to case
-    #r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
+    # case_path = r'D:\Development\PowerLineRouter\test\data\case_wgs84_utm_24'
     case_path = parser.parse_args().path
 
     # --- creates dir structure
     spp.setDirs(case_path)
 
     # --- build cost map
-    
-
+    print('1. Generating cost map')
     cost = costmap.costmap(case_path)
-    print('1')
+    W = cost.read(1)[0:100, 0:90]
+    
     # --- convert to graph
-    G, O = grp.matrix_to_weighted_graph(cost.read(1))
-    print('2')
+    print('2. Converting to graph structure')
+    G, O = grp.matrix_to_weighted_graph(W)
+
+    # --- 
+    # s, t = find_source_and_taget_nodes(cost, coord_from, coord_to)
+    s, t = 1071, 8190
 
     # --- find shortest path
-    s, t = 1, 2
-    parents = djk.dijkstra(G, s, t)
-    print('3')
+    print('3. Run shortest path algorithm')
+    dists, parents = djk.dijkstra(G, s, t)
     route_n = djk.get_dijkstra_path(parents, t)
 
     # --- convert nodes to matrix coordindates
-    route_xy = [grp.get_coords_from_pos(node, (cost.width, cost.height) ) for node in route_n]
+    route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
 
     # --- convert to spatial coordinates
     spline = sf.path_coords_to_polyline(route_xy, cost.transform)
@@ -64,18 +68,6 @@ def main():
     
 
 
-
-
-
-
-
-
-    # ---------------------------
-    m = np.array([[1,2],[3,4]])
-    print(grp.get_element(m, 3))
-    print(grp.get_coords_from_pos(5, (3,3)))
-    print(grp.get_pos_from_coords((2,2), (3,3)))
-    # ---------------------------
 
     # --- reading execution parameters
     #log.console_print("reading execution parameters")
