@@ -101,6 +101,7 @@ def costmap(case_path):
 
     path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
     path_to_costmap = os.path.join(case_path, 'costmap', 'costmap.tif')
+    path_to_costmap_temp = os.path.join(case_path, 'costmap', 'costmap_temp.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
     path_to_candidates = os.path.join(case_path, 'candidates.csv')
 
@@ -114,11 +115,11 @@ def costmap(case_path):
 
     window, profile = crop_raster(start_xy, stop_xy, raster)
 
-    with rio.open(path_to_costmap, 'w', **profile) as ff:
+    with rio.open(path_to_costmap_temp, 'w', **profile) as ff:
         ff.write(raster.read(window = window))
 
     #load cropped raster
-    raster = rio.open(path_to_costmap)
+    raster = rio.open(path_to_costmap_temp)
     cost_map = raster.read(1)
     
     # check crs

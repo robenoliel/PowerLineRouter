@@ -31,8 +31,8 @@ def main():
     parser.add_argument('--path', type=str, required=True)
 
     # --- define path to case
-    # case_path = r'D:\Development\PowerLineRouter\test\data\case_wgs84_utm_24'
-    case_path = parser.parse_args().path
+    case_path = r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
+    #case_path = parser.parse_args().path
 
     # --- creates dir structure
     spp.setDirs(case_path)
@@ -61,6 +61,8 @@ def main():
     # --- convert to spatial coordinates
     spline = sf.path_coords_to_polyline(route_xy, cost.transform)
     print(spline)
+
+    #spline.to_file()
     
     # --- export to shapefile
     # export shapefile here
