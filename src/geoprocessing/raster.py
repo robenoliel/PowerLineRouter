@@ -25,8 +25,7 @@ def get_xy_from_coordinates(lat, lon, base_raster):
     transform = base_raster.transform
     crs = base_raster.crs
 
-    geometry = gpd.points_from_xy([lat], [lon], crs=crs)
-    print(geometry)
+    geometry = gpd.points_from_xy([lat], [lon], crs='WGS84').to_crs(crs)
 
     rasterized = features.rasterize(geometry                   ,
                                 out_shape = shape              ,

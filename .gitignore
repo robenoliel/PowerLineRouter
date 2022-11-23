@@ -1,2 +1,3 @@
 *.pyc
 test/data/case_wgs84_utm_24
+test/data/01_RJ_SE1
