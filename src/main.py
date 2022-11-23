@@ -27,11 +27,12 @@ def main():
     sys.path.append('engineering')
     sys.path.append('algorithms')
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--path', type=str, required=True)
+    #parser = argparse.ArgumentParser()
+    #parser.add_argument('--path', type=str, required=True)
 
     # --- define path to case
-    case_path = r'D:\PowerLineRouter\test\data\case_wgs84_utm_24'
+    case_path = r'D:\PowerLineRouter\test\data\01_RJ_SE1'
+    case_id = 1
     #case_path = parser.parse_args().path
 
     # --- creates dir structure
@@ -39,7 +40,7 @@ def main():
 
     # --- build cost map
     print('1. Generating cost map')
-    cost = costmap.costmap(case_path)
+    cost = costmap.costmap(case_path, case_id)
     W = cost.read(1)[0:100, 0:90]
     
     # --- convert to graph
@@ -59,10 +60,12 @@ def main():
     route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
 
     # --- convert to spatial coordinates
-    spline = sf.path_coords_to_polyline(route_xy, cost.transform)
-    print(spline)
+    spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
 
-    #spline.to_file()
+    out_path = os.path.join(case_path, 'routes','optroute','case_' + str(case_id))
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+    spline.to_file(os.path.join(out_path,'optroute.shp'))
     
     # --- export to shapefile
     # export shapefile here

@@ -47,7 +47,7 @@ def crop_raster(start_xy, stop_xy, raster):
     return window, profile
 
 
-def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
+def addCost(cost_map, filepath, cost, buffer, inside, base_trans, base_crs):
     # open shapefile
     file_name = os.path.basename(filepath)
 
@@ -64,9 +64,14 @@ def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
         print('WARNING: {} file is not georeferenced and will be disconsidered.'.format(file_name))
         return cost_map
 
+    if shape.crs != base_crs:
+        shape = shape.to_crs(base_crs)
+
     # add buffer
     if buffer > 0.0:
         geom = [shapes.buffer(buffer) for shapes in shape.geometry]
+    else:
+        geom = shape.geometry
 
     # swap
     fill = 0
@@ -85,21 +90,41 @@ def addCost(cost_map, filepath, cost, buffer, inside, base_trans):
 
     return cost_map + rasterized
 
-def getStartStop(path_to_candidates, base_raster):
-    df_cand = pd.read_csv(path_to_candidates)
+def getStartStop(case_path, base_raster, case_id):
+
+    path_to_parameters = os.path.join(case_path, 'parameters.csv')
+    df = pd.read_csv(path_to_parameters)
+    id_candidate = df[df['id_case'] == case_id]['id_candidate'][0]
+    path_to_candidates = os.path.join(case_path, 'candidates.csv')
+    df = pd.read_csv(path_to_candidates)
+
+    df_cand = df[df['id_candidate'] == id_candidate]
 
     start_lat, start_lon = df_cand['x_src'].values[0], df_cand['y_src'].values[0]
     stop_lat, stop_lon = df_cand['x_dst'].values[0], df_cand['y_dst'].values[0]
+
+    if np.isnan(start_lat) or np.isnan(start_lon) or np.isnan(stop_lat) or np.isnan(stop_lon):
+        raise Exception('Source or destination coordinates are missing')
 
     start_xy = get_xy_from_coordinates(start_lat, start_lon, base_raster)
     stop_xy = get_xy_from_coordinates(stop_lat, stop_lon, base_raster)
     
     return start_xy, stop_xy
-    
 
-def costmap(case_path):
 
-    path_to_raster = os.path.join(case_path, 'basemap', 'slope_150m.tif')
+def getPathToBaseRaster(case_path, case_id):
+
+    path_to_parameters = os.path.join(case_path, 'parameters.csv')
+    df = pd.read_csv(path_to_parameters)
+    map_id = df[df['id_case'] == case_id]['id_map'][0]
+    path_to_maps = os.path.join(case_path, 'maps.csv')
+    df = pd.read_csv(path_to_maps)
+    return os.path.join(case_path, df[df['id_map'] == map_id]['filepath'][0])
+
+
+def costmap(case_path, case_id):
+
+    path_to_raster = getPathToBaseRaster(case_path, case_id)
     path_to_costmap = os.path.join(case_path, 'costmap', 'costmap.tif')
     path_to_costmap_temp = os.path.join(case_path, 'costmap', 'costmap_temp.tif')
     path_to_constraints = os.path.join(case_path, 'constraints.csv')
@@ -109,9 +134,7 @@ def costmap(case_path):
     raster = rio.open(path_to_raster)
 
     #crop raster
-    start_xy, stop_xy = getStartStop(path_to_candidates, raster)
-    print(start_xy)
-    print(stop_xy)
+    start_xy, stop_xy = getStartStop(case_path, raster, case_id)
 
     window, profile = crop_raster(start_xy, stop_xy, raster)
 
@@ -141,7 +164,8 @@ def costmap(case_path):
                 row['cost'],
                 row['buffer'],
                 row['inside'],
-                raster.transform
+                raster.transform,
+                raster.crs
             )
 
     # write final cost map
