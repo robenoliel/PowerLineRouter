@@ -4,6 +4,11 @@
     script responsable for higher level classes 
 """
 
+class Study:
+    def __init__(self):
+        self.start = None
+        self.stop = None
+
 class PowerLineRouter:
     def __init__(self):
         self.casepath = ""

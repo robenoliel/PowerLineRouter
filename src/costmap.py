@@ -122,7 +122,7 @@ def getPathToBaseRaster(case_path, case_id):
     return os.path.join(case_path, df[df['id_map'] == map_id]['filepath'][0])
 
 
-def costmap(case_path, case_id):
+def costmap(case_path, case_id, study):
 
     path_to_raster = getPathToBaseRaster(case_path, case_id)
     path_to_costmap = os.path.join(case_path, 'costmap', 'costmap.tif')
@@ -135,6 +135,8 @@ def costmap(case_path, case_id):
 
     #crop raster
     start_xy, stop_xy = getStartStop(case_path, raster, case_id)
+    study.start = start_xy
+    study.stop = stop_xy
 
     window, profile = crop_raster(start_xy, stop_xy, raster)
 

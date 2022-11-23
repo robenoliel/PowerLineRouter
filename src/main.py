@@ -20,6 +20,8 @@ import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
 import numpy as np
 import support as spp
+from classes import *
+from algorithms.graph import *
 
 def main():
 
@@ -33,6 +35,7 @@ def main():
     # --- define path to case
     case_path = r'D:\PowerLineRouter\test\data\01_RJ_SE1'
     case_id = 1
+    study = Study()
     #case_path = parser.parse_args().path
 
     # --- creates dir structure
@@ -40,8 +43,11 @@ def main():
 
     # --- build cost map
     print('1. Generating cost map')
-    cost = costmap.costmap(case_path, case_id)
-    W = cost.read(1)[0:100, 0:90]
+    cost = costmap.costmap(case_path, case_id, study)
+    print(study.start, study.stop)
+    s = get_pos_from_coords(study.start, cost.read(1).shape)
+    t = get_pos_from_coords(study.stop, cost.read(1).shape)
+    W = cost.read(1)#[0:100, 0:90]
     
     # --- convert to graph
     print('2. Converting to graph structure')
