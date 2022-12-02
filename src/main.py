@@ -6,7 +6,7 @@
 
 import os
 os.chdir("src")
-import classes
+from classes import *
 import io, log
 import support
 import router
@@ -21,57 +21,67 @@ import geoprocessing.shapefile as sf
 import numpy as np
 import support as spp
 from classes import *
-from algorithms.graph import *
+#from algorithms.graph import *
 
 def main():
 
-    sys.path.append('geoprocessing')
-    sys.path.append('engineering')
-    sys.path.append('algorithms')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--studies', help='delimited list input', type=lambda s: [int(item) for item in s.split(',')], required =False)
+    parser.add_argument('--path', type=str, required=True)
+    case_path = parser.parse_args().path
+
+    #case_path = r'D:\PowerLineRouter\test\data\01_RJ_SE1'
+    plr = PowerLineRouter()
+    plr.load_case(case_path)
+    plr.run_router()
+    plr.close_case()
+
+    #sys.path.append('geoprocessing')
+    #sys.path.append('engineering')
+    #sys.path.append('algorithms')
 
     #parser = argparse.ArgumentParser()
     #parser.add_argument('--path', type=str, required=True)
 
     # --- define path to case
-    case_path = r'D:\PowerLineRouter\test\data\01_RJ_SE1'
-    case_id = 1
-    study = Study()
+    #case_path = r'D:\PowerLineRouter\test\data\01_RJ_SE1'
+    #case_id = 1
+    #case = Case(case_path)
     #case_path = parser.parse_args().path
 
     # --- creates dir structure
-    spp.setDirs(case_path)
+    #spp.setDirs(case_path)
 
     # --- build cost map
-    print('1. Generating cost map')
-    cost = costmap.costmap(case_path, case_id, study)
-    print(study.start, study.stop)
-    s = get_pos_from_coords(study.start, cost.read(1).shape)
-    t = get_pos_from_coords(study.stop, cost.read(1).shape)
-    W = cost.read(1)#[0:100, 0:90]
+    #print('1. Generating cost map')
+    #cost = costmap.costmap(case_path, case_id, study)
+    #s = get_pos_from_coords(study.start, cost.read(1).shape)
+    #t = get_pos_from_coords(study.stop, cost.read(1).shape)
+    #W = cost.read(1)#[0:100, 0:90]
     
     # --- convert to graph
-    print('2. Converting to graph structure')
-    G, O = grp.matrix_to_weighted_graph(W)
+    #print('2. Converting to graph structure')
+    #G, O = grp.matrix_to_weighted_graph(W)
 
     # --- 
-    # s, t = find_source_and_taget_nodes(cost, coord_from, coord_to)
-    s, t = 1071, 8190
+    #s, t = find_source_and_taget_nodes(cost, coord_from, coord_to)
+    #s, t = 1071, 8190
 
     # --- find shortest path
-    print('3. Run shortest path algorithm')
-    dists, parents = djk.dijkstra(G, s, t)
-    route_n = djk.get_dijkstra_path(parents, t)
+    #print('3. Run shortest path algorithm')
+    #dists, parents = djk.dijkstra(G, s, t)
+    #route_n = djk.get_dijkstra_path(parents, t)
 
     # --- convert nodes to matrix coordindates
-    route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
+    #route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
 
     # --- convert to spatial coordinates
-    spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
+    #spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
 
-    out_path = os.path.join(case_path, 'routes','optroute','case_' + str(case_id))
-    if not os.path.exists(out_path):
-        os.makedirs(out_path)
-    spline.to_file(os.path.join(out_path,'optroute.shp'))
+    #out_path = os.path.join(case_path, 'routes','optroute','case_' + str(case_id))
+    #if not os.path.exists(out_path):
+    #    os.makedirs(out_path)
+    #spline.to_file(os.path.join(out_path,'optroute.shp'))
     
     # --- export to shapefile
     # export shapefile here

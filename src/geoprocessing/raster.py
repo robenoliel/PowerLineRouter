@@ -24,11 +24,17 @@ def get_xy_from_coordinates(lat, lon, base_raster):
     shape = base_raster.read(1).shape
     transform = base_raster.transform
     crs = base_raster.crs
-    print(lat, lon)
-    print(crs)
 
-    geometry = gpd.points_from_xy([lat], [lon], crs='+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0').to_crs(crs)
+    geometry = gpd.points_from_xy([lat], [lon], crs=crs)
     print([(p.x, p.y) for p in geometry])
+    p = [(p.x, p.y) for p in geometry]
+
+    def sample_or_error(src, x, y):
+        row, col = src.index(x, y)
+        if any([row < 0, col < 0, row >= src.height, col >= src.width]):
+            raise ValueError(f"({lon}, {lat}) is out of bounds from {src.bounds}")
+
+    sample_or_error(base_raster, p[0][0], p[0][1])
 
     rasterized = features.rasterize(geometry                   ,
                                 out_shape = shape              ,
@@ -39,7 +45,7 @@ def get_xy_from_coordinates(lat, lon, base_raster):
                                 default_value = 1              , # value whitin geometry
                                 dtype = None)
 
-    val = np.where(rasterized == 1)
-
+    val = np.where(rasterized != 0)
+    print(val)
     print(val[0][0], val[1][0])
     return (val[0][0], val[1][0])
