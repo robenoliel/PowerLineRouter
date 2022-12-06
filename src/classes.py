@@ -57,25 +57,25 @@ class PowerLineRouter:
             t = get_pos_from_coords(study.stop, cost.read(1).shape)
             W = cost.read(1)
 
-            # --- convert to graph
-            print('2. Converting to graph structure')
-            G, O = grp.matrix_to_weighted_graph(W)
+            # # --- convert to graph
+            # print('2. Converting to graph structure')
+            # G, O = grp.matrix_to_weighted_graph(W)
 
-            # --- find shortest path
-            print('3. Run shortest path algorithm')
-            dists, parents = djk.dijkstra(G, s, t)
-            route_n = djk.get_dijkstra_path(parents, t)
+            # # --- find shortest path
+            # print('3. Run shortest path algorithm')
+            # dists, parents = djk.dijkstra(G, s, t)
+            # route_n = djk.get_dijkstra_path(parents, t)
 
-            # --- convert nodes to matrix coordindates
-            route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
+            # # --- convert nodes to matrix coordindates
+            # route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
 
-            # --- convert to spatial coordinates
-            spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
+            # # --- convert to spatial coordinates
+            # spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
 
-            out_path = os.path.join(self.case.path_to_case, 'routes','optroute','case_' + str(case_id))
-            if not os.path.exists(out_path):
-                os.makedirs(out_path)
-            spline.to_file(os.path.join(out_path,'optroute.shp'))
+            # out_path = os.path.join(self.case.path_to_case, 'routes','optroute','study_' + str(self.study.id))
+            # if not os.path.exists(out_path):
+            #     os.makedirs(out_path)
+            # spline.to_file(os.path.join(out_path,'optroute.shp'))
 
     def close_case(self):
         for study in self.case.studies:
