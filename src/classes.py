@@ -5,26 +5,21 @@
 """
 
 import os
-import pandas as pd
-import geopandas as gpd
-import io, log
-import support
-import router
-import engineering.eng_tools as engt
 import sys
 import costmap
+import pandas as pd
 import rasterio as rio
-import argparse
+import geopandas as gpd
+import engineering.eng_tools as engt
 import algorithms.graph as grp
 import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
-from shapely.geometry import Point
 import numpy as np
 import support as spp
-from classes import *
+
 from algorithms.graph import *
-import logging as log
-from main import logger
+from shapely.geometry import Point
+from classes import *
 
 class PowerLineRouter:
     def __init__(self):
@@ -52,34 +47,42 @@ class PowerLineRouter:
         
         for study in studies:
 
-
-
             # --- build cost map
-            logger.info('1. Generating cost map')
+            # logger.info('1. Generating cost map')
+            
+            print('1. Generating cost map')
             cost = costmap.costmap(self.case, study)
-            s = get_pos_from_coords(study.start, cost.read(1).shape)
-            t = get_pos_from_coords(study.stop, cost.read(1).shape)
-            W = cost.read(1)
+            source_node = get_pos_from_coords(study.start, cost.read(1).shape)
+            target_node = get_pos_from_coords(study.stop, cost.read(1).shape)
+            W = cost.read(1) # W = np.random.rand(3,3)
 
             # --- convert to graph
             print('2. Converting to graph structure')
             G, O = grp.matrix_to_weighted_graph(W)
 
             # # --- find shortest path
-            print('3. Run shortest path algorithm')
-            dists, parents = djk.dijkstra(G, s, t)
-            route_n = djk.get_dijkstra_path(parents, t)
+            print('3. Running shortest path algorithm')
 
-            # # --- convert nodes to matrix coordindates
-            # route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
+            print('3.1 Run Dijkstra\'s algorithm')
+            dists, parents = djk.dijkstra(G, source_node, target_node)
 
-            # # --- convert to spatial coordinates
-            # spline = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
+            print('3.2 Get optimal path')
+            route_n = djk.get_dijkstra_path(parents, target_node)
 
-            # out_path = os.path.join(self.case.path_to_case, 'routes','optroute','study_' + str(self.study.id))
-            # if not os.path.exists(out_path):
-            #     os.makedirs(out_path)
-            # spline.to_file(os.path.join(out_path,'optroute.shp'))
+            # # --- convert to spatial coordindates
+            print('4. Exporting power line route')
+
+            print('4.1 Node > Coords')
+            route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
+
+            print('4.2 Coords > Line')
+            spline   = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
+
+            print('4.3 Line > .shp')
+            out_path = os.path.join(self.case.path_to_case, 'routes','optroute','study_' + str(self.study.id))
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+            spline.to_file(os.path.join(out_path,'optroute.shp'))
 
     def close_case(self):
         for study in self.case.studies:
@@ -142,7 +145,7 @@ class Case:
                     if map.type == 'basemap':
                         raise Exception('ERROR: {} file is missing.'.format(file_name))
                     else:
-                        logger.warning('{} file is missing and will be disconsidered.'.format(file_name))
+                        # logger.warning('{} file is missing and will be disconsidered.'.format(file_name))
                         continue
                 map = Map()
                 map.id = map_row['id_map']
@@ -158,7 +161,7 @@ class Case:
                     const_path = os.path.join(self.path_to_case, constraint_row['filepath'])
                     if not os.path.exists(const_path):
                         file_name = os.path.basename(const_path)
-                        logger.warning('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
+                        # logger.warning('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
                         continue
                     constraint = SpatialConstraint()
                     constraint.id = constraint_row['id_constraint']

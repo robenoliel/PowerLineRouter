@@ -50,7 +50,9 @@ def dijkstra(G, s, t):
         # Cannot be typemax if `u` is in the queue
         d = dists[u] 
         
-        for v, _ in G.adj[u].items():
+        neighbors = G.adj[u].items()
+
+        for v, _ in neighbors:
 
             alt = d + G.edges[u, v]['weight']
 

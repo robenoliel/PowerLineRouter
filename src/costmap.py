@@ -12,7 +12,6 @@ import geopandas as gpd
 import pandas as pd
 import os
 from geoprocessing.raster import *
-from main import logger
 
 def crop_raster(start_xy, stop_xy, raster, extra_size=1000):
 

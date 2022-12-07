@@ -5,14 +5,10 @@
 """
 
 import os
-#os.chdir("src")
+# os.chdir("src")
 from classes import *
-import io, log
 import support
-import router
 import engineering.eng_tools as engt
-import sys
-import costmap
 import rasterio as rio
 import argparse
 import algorithms.graph as grp
@@ -20,13 +16,11 @@ import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
 import numpy as np
 import support as spp
-from classes import *
 import logging as log
 from distutils.util import strtobool
-#from algorithms.graph import *
 
-logger = log.getLogger(__name__)
-handler = log.StreamHandler()
+logger    = log.getLogger(__name__)
+handler   = log.StreamHandler()
 formatter = log.Formatter('%(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)

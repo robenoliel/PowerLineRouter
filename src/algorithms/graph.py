@@ -45,7 +45,7 @@ def surroundings(W,i,j,N,M):
     w = []
     for u in range(i,min(i+1,N)):
         for v in range(i,min(j+1,M)):
-            w.append((u, v, mean([W[i][j], W[u][v]])))
+            w.append((u, v, mean([W[i,j], W[u][v]])))
     return w
 
 
@@ -65,23 +65,23 @@ def matrix_to_weighted_graph(W):
     # getting weighted edges from matrix neighborhood 
     start_time = time.time()
     for i in range(0,N):
-        for j in range(i,M):
+        for j in range(0,M):
 
             # east
             if j+1 < M:
-                G.add_edge(O[i][j], O[i][j+1], weight=mean([W[i][j], W[i][j+1]]))
+                G.add_edge(O[i,j], O[i,j+1], weight=mean([W[i,j], W[i,j+1]]))
 
             # south-east
             if (i+1 < N) & (j+1 < M):
-                G.add_edge(O[i][j], O[i+1][j+1], weight=mean([W[i][j], W[i+1][j+1]]) * 1.41)
+                G.add_edge(O[i,j], O[i+1,j+1], weight=mean([W[i,j], W[i+1,j+1]]) * 1.41)
 
             # south
             if (i+1 < N):
-                G.add_edge(O[i][j], O[i+1][j], weight=mean([W[i][j], W[i+1][j]]))
+                G.add_edge(O[i,j], O[i+1,j], weight=mean([W[i,j], W[i+1,j]]))
             
             # south-west
             if (i+1 < N) & (j-1 > 0):
-                G.add_edge(O[i][j], O[i+1][j-1], weight=mean([W[i][j], W[i+1][j-1]]) * 1.41)
+                G.add_edge(O[i,j], O[i+1,j-1], weight=mean([W[i,j], W[i+1,j-1]]) * 1.41)
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -94,7 +94,7 @@ def make_node_map(N, M, zero_based=True):
     for i in range(N):
         for j in range(M):
             if not(zero_based): k += 1
-            node_map[i][j] = k
+            node_map[i,j] = k
             if zero_based: k += 1 
 
     return node_map
