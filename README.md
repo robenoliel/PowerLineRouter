@@ -1,1 +1,9 @@
 # PowerLineRouter
+
+## Introduction
+
+## Implementation
+
+
+
+## Methodology
