@@ -79,7 +79,7 @@ class PowerLineRouter:
             spline   = sf.path_coords_to_polyline(route_xy, cost.transform, cost.crs)
 
             print('4.3 Line > .shp')
-            out_path = os.path.join(self.case.path_to_case, 'routes','optroute','study_' + str(self.study.id))
+            out_path = os.path.join(self.case.path_to_case, 'routes','optroute','study_' + str(study.id))
             if not os.path.exists(out_path):
                 os.makedirs(out_path)
             spline.to_file(os.path.join(out_path,'optroute.shp'))
