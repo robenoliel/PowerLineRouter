@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import math
+import time
 
 def get_element(matrix, pos):
     """
@@ -40,50 +41,61 @@ def mean(x):
     return sum(x)/len(x)
 
 
-def surroundings(W,i,j,N,M,k):
+def surroundings(W,i,j,N,M):
     w = []
-    for u in range(i,min(i+k+1,N)):
-        for v in range(i,min(j+k+1,M)):
-            w.append((u, v, mean([W[i][j], W[u][v]]) * k))
+    for u in range(i,min(i+1,N)):
+        for v in range(i,min(j+1,M)):
+            w.append((u, v, mean([W[i][j], W[u][v]])))
     return w
 
 
-def matrix_to_weighted_graph(W, K=1):
-
+def matrix_to_weighted_graph(W):
+        
     # matrix dimension
     N, M = W.shape
 
     # graph initialization
     # should we define a DiGraph?
     G = nx.Graph()
+    G.add_nodes_from(range(N*M))
 
     # node map
     O = make_node_map(N, M)
 
     # getting weighted edges from matrix neighborhood 
-    e = []
-    n = 0
-    for i in range(N):
-        for j in range(M):            
-            if (W[i][j] > 0.0):
-                for k in range(K,K+1):
-                    for (u,v,w) in surroundings(W,i,j,N,M,k):
-                        if w > 0.0:
-                            e.append( (O[i][j], O[u][v], w) )
+    start_time = time.time()
+    for i in range(0,N):
+        for j in range(i,M):
 
-    # setting edges (should be more efficient like this)
-    G.add_weighted_edges_from(e)
-   
+            # east
+            if j+1 < M:
+                G.add_edge(O[i][j], O[i][j+1], weight=mean([W[i][j], W[i][j+1]]))
+
+            # south-east
+            if (i+1 < N) & (j+1 < M):
+                G.add_edge(O[i][j], O[i+1][j+1], weight=mean([W[i][j], W[i+1][j+1]]) * 1.41)
+
+            # south
+            if (i+1 < N):
+                G.add_edge(O[i][j], O[i+1][j], weight=mean([W[i][j], W[i+1][j]]))
+            
+            # south-west
+            if (i+1 < N) & (j-1 > 0):
+                G.add_edge(O[i][j], O[i+1][j-1], weight=mean([W[i][j], W[i+1][j-1]]) * 1.41)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+
     return G, O
 
-def make_node_map(N, M):
+def make_node_map(N, M, zero_based=True):
     node_map = np.zeros((N, M), dtype=int)
     
     k = 0
     for i in range(N):
         for j in range(M):
-            k += 1
-            node_map[i][j]  = k
+            if not(zero_based): k += 1
+            node_map[i][j] = k
+            if zero_based: k += 1 
 
     return node_map
 
