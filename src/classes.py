@@ -57,14 +57,14 @@ class PowerLineRouter:
             t = get_pos_from_coords(study.stop, cost.read(1).shape)
             W = cost.read(1)
 
-            # # --- convert to graph
-            # print('2. Converting to graph structure')
-            # G, O = grp.matrix_to_weighted_graph(W)
+            # --- convert to graph
+            print('2. Converting to graph structure')
+            G, O = grp.matrix_to_weighted_graph(W)
 
             # # --- find shortest path
-            # print('3. Run shortest path algorithm')
-            # dists, parents = djk.dijkstra(G, s, t)
-            # route_n = djk.get_dijkstra_path(parents, t)
+            print('3. Run shortest path algorithm')
+            dists, parents = djk.dijkstra(G, s, t)
+            route_n = djk.get_dijkstra_path(parents, t)
 
             # # --- convert nodes to matrix coordindates
             # route_xy = [grp.get_coords_from_pos(node, W.shape) for node in route_n]
@@ -105,7 +105,6 @@ class Case:
         self.name = os.path.basename(path_to_case)
         self.path_to_case = path_to_case
         
-
         self._load_studies()
 
     def _load_studies(self):
@@ -168,9 +167,6 @@ class Case:
                     study.spatial_constraints.append(constraint)
 
             self.studies.append(study)
-
-
-
 
 class SpatialConstraint:
     def __init__(self):
