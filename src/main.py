@@ -47,7 +47,7 @@ def main():
     logger.info('Loading case')
     plr.load_case(case_path)
     logger.info('Beginning power line routing')
-    plr.run_router()
+    plr.run_router(studies=args.studies)
     logger.info('Routing complete, closing case')
     plr.close_case()
 
