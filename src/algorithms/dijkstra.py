@@ -1,6 +1,7 @@
 from queue import PriorityQueue
 import networkx as nx
 import numpy as np
+import time
 
 def dijkstra(G, s, t):
     #
@@ -33,6 +34,7 @@ def dijkstra(G, s, t):
     H.put((0.0, str(s)))
 
     # runs while queue has elements
+    start_time = time.time()
     while not H.empty():
 
         # remove "cheapest" element
@@ -68,6 +70,8 @@ def dijkstra(G, s, t):
             elif alt == dists[v]:
                 pathcounts[v] += pathcounts[u]
                 
+    print("--- %s seconds ---" % (time.time() - start_time))
+
     # 
     pathcounts[s] = 1
     parents[s]    = 0
