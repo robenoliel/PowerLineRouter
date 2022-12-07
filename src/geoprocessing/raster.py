@@ -26,7 +26,6 @@ def get_xy_from_coordinates(lat, lon, base_raster):
     crs = base_raster.crs
 
     geometry = gpd.points_from_xy([lat], [lon], crs=crs)
-    print([(p.x, p.y) for p in geometry])
     p = [(p.x, p.y) for p in geometry]
 
     def sample_or_error(src, x, y):
@@ -46,6 +45,4 @@ def get_xy_from_coordinates(lat, lon, base_raster):
                                 dtype = None)
 
     val = np.where(rasterized != 0)
-    print(val)
-    print(val[0][0], val[1][0])
     return (val[0][0], val[1][0])

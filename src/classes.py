@@ -23,6 +23,8 @@ import numpy as np
 import support as spp
 from classes import *
 from algorithms.graph import *
+import logging as log
+from main import logger
 
 class PowerLineRouter:
     def __init__(self):
@@ -50,8 +52,10 @@ class PowerLineRouter:
         
         for study in studies:
 
+
+
             # --- build cost map
-            print('1. Generating cost map')
+            logger.info('1. Generating cost map')
             cost = costmap.costmap(self.case, study)
             s = get_pos_from_coords(study.start, cost.read(1).shape)
             t = get_pos_from_coords(study.stop, cost.read(1).shape)
@@ -139,7 +143,7 @@ class Case:
                     if map.type == 'basemap':
                         raise Exception('ERROR: {} file is missing.'.format(file_name))
                     else:
-                        print('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
+                        logger.warning('{} file is missing and will be disconsidered.'.format(file_name))
                         continue
                 map = Map()
                 map.id = map_row['id_map']
@@ -155,7 +159,7 @@ class Case:
                     const_path = os.path.join(self.path_to_case, constraint_row['filepath'])
                     if not os.path.exists(const_path):
                         file_name = os.path.basename(const_path)
-                        print('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
+                        logger.warning('WARNING: {} file is missing and will be disconsidered.'.format(file_name))
                         continue
                     constraint = SpatialConstraint()
                     constraint.id = constraint_row['id_constraint']

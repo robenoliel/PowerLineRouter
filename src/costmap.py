@@ -12,6 +12,7 @@ import geopandas as gpd
 import pandas as pd
 import os
 from geoprocessing.raster import *
+from main import logger
 
 def crop_raster(start_xy, stop_xy, raster, extra_size=1000):
 
@@ -55,11 +56,6 @@ def addCost(cost_map, constraint, base_trans, base_crs):
 
     # read shape
     shape = constraint.geometry
-
-    # check CRS
-    if shape.crs == None:
-        print('WARNING: {} file is not georeferenced and will be disconsidered.'.format(file_name))
-        return cost_map
 
     if shape.crs != base_crs:
         shape = shape.to_crs(base_crs)
