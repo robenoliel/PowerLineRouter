@@ -7,7 +7,7 @@
 To install this module, its code must be acquired from the repository page. That can be done by forking or downloading the project. Once the user has the project on his computer, he should make sure his Python environment has all requirements for the module. The Python version should be compatible with `3.9.9` or above. To install any missing dependencies, open the command prompt at the project root folder and run:
 
 ```
-pip install -r requirements
+pip install -r requirements.txt
 ```
 
 The road routing routines will be expecting input data organized in a folder as follows:
