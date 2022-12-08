@@ -20,6 +20,7 @@ import support as spp
 from algorithms.graph import *
 from shapely.geometry import Point
 from classes import *
+from main import logger
 
 class PowerLineRouter:
     def __init__(self):
@@ -48,7 +49,7 @@ class PowerLineRouter:
         for study in studies:
 
             # --- build cost map
-            # logger.info('1. Generating cost map')
+            logger.info('1. Generating cost map')
             
             print('1. Generating cost map')
             cost = costmap.costmap(self.case, study)
@@ -127,6 +128,7 @@ class Case:
         df_params = df_params.join(df_candidates, on = 'id_candidate', how = 'left', rsuffix = '_cand')
 
         for _, row in df_params.iterrows():
+            is_valid_study = True
             study = Study()
             study.id = row['id_study']
             study.base_crs = row['projection']
@@ -138,6 +140,7 @@ class Case:
             study.start = (gdf.loc[0,'geometry'].x, gdf.loc[0,'geometry'].y)
             study.stop = (gdf.loc[1,'geometry'].x, gdf.loc[1,'geometry'].y)
 
+            has_basemap = False
             for _, map_row in df_maps[df_maps['id_study'] == study.id].iterrows():
                 map_path = os.path.join(self.path_to_case, map_row['filepath'])
                 if not os.path.exists(map_path):
@@ -153,8 +156,12 @@ class Case:
                 map.io = rio.open(map_path)
                 if map.type == 'basemap':
                     study.base_map = map
+                    has_basemap = True
                 else:
                     study.maps.append(map)
+            
+            if not has_basemap:
+                is_valid_study = False
 
             for _, constraint_row in df_constraints[df_constraints['id_study'] == study.id].iterrows():
                 if constraint_row['consider'] == 1:
@@ -173,7 +180,8 @@ class Case:
                     constraint.geometry = gpd.read_file(const_path)
                     study.spatial_constraints.append(constraint)
 
-            self.studies.append(study)
+            if is_valid_study:
+                self.studies.append(study)
 
 class SpatialConstraint:
     def __init__(self):
