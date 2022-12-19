@@ -13,7 +13,15 @@ import pandas as pd
 import os
 from geoprocessing.raster import *
 
-def crop_raster(start_xy, stop_xy, raster, extra_size=1000):
+def crop_raster(start_rc, stop_rc, raster, extra_size=0):
+
+    #start_xy = [start_rc[1], start_rc[0]]
+    #stop_xy = [stop_rc[1], stop_rc[0]]
+
+    start_xy = start_rc
+    stop_xy = stop_rc
+
+    print(rio.transform.xy(raster.transform, start_xy[0], start_xy[1]))
 
     gt = raster.transform
     pixelSizeX = gt[0]
@@ -34,8 +42,11 @@ def crop_raster(start_xy, stop_xy, raster, extra_size=1000):
     start_xy_new = (start_xy[0] - xoff_extra, start_xy[1] - yoff_extra)
     stop_xy_new = (stop_xy[0] - xoff_extra, stop_xy[1] - yoff_extra)
 
-    xsize_extra = (xsize + extraPixelsX) if (xoff_extra + xsize + extraPixelsX) < raster.read(1).shape[0] else raster.read(1).shape[0] - xoff_extra
-    ysize_extra = (ysize + extraPixelsY) if (yoff_extra + ysize + extraPixelsY) < raster.read(1).shape[1] else raster.read(1).shape[1] - yoff_extra
+    #start_rc_new = [start_xy_new[1], start_xy_new[0]]
+    #stop_rc_new = [stop_xy_new[1], stop_xy_new[0]]
+
+    xsize_extra = (xsize + extraPixelsX + xoff - xoff_extra) if (xoff + xsize + extraPixelsX) < raster.read(1).shape[1] else raster.read(1).shape[1] - xoff_extra
+    ysize_extra = (ysize + extraPixelsY + yoff - yoff_extra) if (yoff + ysize + extraPixelsY) < raster.read(1).shape[0] else raster.read(1).shape[0] - yoff_extra
     
     window = Window(xoff_extra, yoff_extra, xsize_extra, ysize_extra)
     transform = raster.window_transform(window)

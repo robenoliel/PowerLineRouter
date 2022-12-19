@@ -16,6 +16,7 @@ import algorithms.dijkstra as djk
 import geoprocessing.shapefile as sf
 import numpy as np
 import support as spp
+from tqdm import tqdm
 
 from algorithms.graph import *
 from shapely.geometry import Point
@@ -53,6 +54,7 @@ class PowerLineRouter:
             
             print('1. Generating cost map')
             cost = costmap.costmap(self.case, study)
+            print(cost.read(1).shape)
             source_node = get_pos_from_coords(study.start, cost.read(1).shape)
             target_node = get_pos_from_coords(study.stop, cost.read(1).shape)
             W = cost.read(1) # W = np.random.rand(3,3)
@@ -129,7 +131,7 @@ class Case:
         df_constraints = pd.read_csv(path_to_constraints)
         df_params = df_params.join(df_candidates, on = 'id_candidate', how = 'left', rsuffix = '_cand')
 
-        for _, row in df_params.iterrows():
+        for _, row in tqdm(df_params.iterrows(), desc = 'Loading studies'):
             is_valid_study = True
             study = Study()
             study.id = row['id_study']
@@ -166,6 +168,8 @@ class Case:
             
             if not has_basemap:
                 is_valid_study = False
+                logger.warning('study {0} has no basemap and will be disconsidered'.format(study.id))
+                continue
 
             for _, constraint_row in df_constraints[df_constraints['id_study'] == study.id].iterrows():
                 if constraint_row['consider'] == 1:
