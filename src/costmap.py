@@ -106,11 +106,8 @@ def getPathToBaseRaster(case_path, case_id):
 
 def costmap(case, study):
 
-    #path_to_raster = getPathToBaseRaster(case_path, case_id)
     path_to_costmap = os.path.join(case.path_to_case, 'costmap', 'costmap.tif')
     path_to_costmap_temp = os.path.join(case.path_to_case, 'costmap', 'costmap_temp.tif')
-    #path_to_constraints = os.path.join(case_path, 'constraints.csv')
-    #path_to_candidates = os.path.join(case_path, 'candidates.csv')
 
     # open raster file
     raster = study.base_map.io
@@ -118,7 +115,10 @@ def costmap(case, study):
     #crop raster
     start_xy, stop_xy = getStartStop(study)
 
-    window, profile, start_xy_new, stop_xy_new = crop_raster(start_xy, stop_xy, raster)
+    coords_start = rio.transform.xy(raster.transform, start_xy[0], start_xy[1])
+    coords_stop  = rio.transform.xy(raster.transform, stop_xy[0] , stop_xy[1] )
+
+    window, profile, start_xy_new, stop_xy_new = crop_raster(start_xy, stop_xy, raster, 0)
     study.start = start_xy_new
     study.stop = stop_xy_new
 
@@ -127,6 +127,9 @@ def costmap(case, study):
 
     #load cropped raster
     raster   = rio.open(path_to_costmap_temp)
+    coords_start_new = rio.transform.xy(raster.transform, study.start[0], study.start[1])
+    coords_stop_new  = rio.transform.xy(raster.transform, study.stop[0] , study.stop[1] )
+
     cost_map = (raster.read(1) * 0.0) + study.base_cost
     
     # check crs

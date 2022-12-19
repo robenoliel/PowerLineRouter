@@ -98,6 +98,8 @@ class Study:
         #self.name = None
         self.base_crs = None
         self.base_map = None
+        self.lonlat_start = None
+        self.lonlat_stop = None
         self.start = None
         self.stop = None
         self.base_cost = None
@@ -133,6 +135,8 @@ class Case:
             study.id = row['id_study']
             study.base_crs = row['projection']
             study.base_cost = row['base_cost']
+            study.lonlat_start = (row['x_src'], row['y_src'])
+            study.lonlat_stop  = (row['x_dst'], row['y_dst'])
 
             d = {'name': ['start', 'stop'], 'geometry': [Point(row['x_src'], row['y_src']), Point(row['x_dst'], row['y_dst'])]}
             gdf = gpd.GeoDataFrame(d, crs='WGS84')
