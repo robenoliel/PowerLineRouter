@@ -12,8 +12,12 @@ import geopandas as gpd
 import pandas as pd
 import os
 from geoprocessing.raster import *
+import geoprocessing.shapefile as sf
+import math
+from affine import Affine
 
-def crop_raster(start_rc, stop_rc, raster, extra_size=0):
+
+def crop_raster(start_rc, stop_rc, raster, extra_size=1000):
 
     #start_xy = [start_rc[1], start_rc[0]]
     #stop_xy = [stop_rc[1], stop_rc[0]]
@@ -22,6 +26,13 @@ def crop_raster(start_rc, stop_rc, raster, extra_size=0):
     stop_xy = stop_rc
 
     print(rio.transform.xy(raster.transform, start_xy[0], start_xy[1]))
+    start_ll = rio.transform.xy(raster.transform, start_xy[0], start_xy[1])
+    stop_ll = rio.transform.xy(raster.transform, stop_xy[0], stop_xy[1])
+
+    print(raster.crs)
+
+    sf.export_point(start_ll[0],start_ll[1],r'D:\PowerLineRouter\test\data\01_RJ_SE1\temporary\start')
+    sf.export_point(stop_ll[0],stop_ll[1],r'D:\PowerLineRouter\test\data\01_RJ_SE1\temporary\stop')
 
     gt = raster.transform
     pixelSizeX = gt[0]
@@ -48,15 +59,33 @@ def crop_raster(start_rc, stop_rc, raster, extra_size=0):
     xsize_extra = (xsize + extraPixelsX + xoff - xoff_extra) if (xoff + xsize + extraPixelsX) < raster.read(1).shape[1] else raster.read(1).shape[1] - xoff_extra
     ysize_extra = (ysize + extraPixelsY + yoff - yoff_extra) if (yoff + ysize + extraPixelsY) < raster.read(1).shape[0] else raster.read(1).shape[0] - yoff_extra
     
+    #xoff_extra = 0
+    #yoff_extra = 0
+    #xsize_extra = math.floor(raster.read(1).shape[0]/2)
+    #ysize_extra = raster.read(1).shape[1]
+
+    window_array = raster.read(1)[xoff_extra:xoff_extra+xsize_extra,yoff_extra:yoff_extra+ysize_extra]
+
+    #profile = raster.profile
+    #profile.update({
+    #    'height': xsize_extra,
+    #    'width': ysize_extra})
+
     window = Window(xoff_extra, yoff_extra, xsize_extra, ysize_extra)
-    transform = raster.window_transform(window)
+    print(raster.transform)
+    #transform = raster.window_transform(window)
+    transform = raster.transform
+    print(transform[0])
+    upperleft = rio.transform.xy(raster.transform, xoff_extra, yoff_extra)
+    transform = Affine(transform[0], transform[1], upperleft[0], transform[3], transform[4], upperleft[1])
+    print(transform)
     profile = raster.profile
     profile.update({
         'height': xsize_extra,
         'width': ysize_extra,
         'transform': transform})
 
-    return window, profile, start_xy_new, stop_xy_new
+    return window_array, profile, start_xy_new, stop_xy_new
 
 def addCost(cost_map, constraint, base_trans, base_crs):
 
@@ -129,12 +158,12 @@ def costmap(case, study):
     coords_start = rio.transform.xy(raster.transform, start_xy[0], start_xy[1])
     coords_stop  = rio.transform.xy(raster.transform, stop_xy[0] , stop_xy[1] )
 
-    window, profile, start_xy_new, stop_xy_new = crop_raster(start_xy, stop_xy, raster, 0)
+    window, profile, start_xy_new, stop_xy_new = crop_raster(start_xy, stop_xy, raster, extra_size=1000)
     study.start = start_xy_new
     study.stop = stop_xy_new
 
     with rio.open(path_to_costmap_temp, 'w', **profile) as ff:
-        ff.write(raster.read(window = window))
+        ff.write(window,1)
 
     #load cropped raster
     raster   = rio.open(path_to_costmap_temp)
