@@ -131,7 +131,8 @@ class Case:
         df_constraints = pd.read_csv(path_to_constraints)
         df_params = df_params.join(df_candidates, on = 'id_candidate', how = 'left', rsuffix = '_cand')
 
-        for _, row in tqdm(df_params.iterrows(), desc = 'Loading studies'):
+        warnings = []
+        for _, row in df_params.iterrows():
             is_valid_study = True
             study = Study()
             study.id = row['id_study']
@@ -168,7 +169,7 @@ class Case:
             
             if not has_basemap:
                 is_valid_study = False
-                logger.warning('study {0} has no basemap and will be disconsidered'.format(study.id))
+                warnings.append('study {0} has no basemap and will be disconsidered'.format(study.id))
                 continue
 
             for _, constraint_row in df_constraints[df_constraints['id_study'] == study.id].iterrows():
@@ -190,6 +191,9 @@ class Case:
 
             if is_valid_study:
                 self.studies.append(study)
+
+        for warning in warnings:
+            logger.warning(warning)
 
 class SpatialConstraint:
     def __init__(self):
